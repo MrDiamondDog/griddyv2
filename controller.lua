@@ -2,11 +2,15 @@ local main = require("frame")
 local events = require("events")
 
 local function distanceToRotationDuration(speed, distance)
-    return (math.ceil(distance / (speed / 512)) + 2) / 20
+    local blocksToMove = distance + 4
+    local metersPerTick = speed / 512
+    local duration = math.ceil(blocksToMove / metersPerTick) + 2
+    return duration / 20
 end
 
+local speed = 256
+
 local numVaults = fs.exists("vault_cache") and #fs.list("vault_cache") or 0
-local currentVault = 0
 
 local controllerThread = main.frame:addThread()
 
@@ -23,6 +27,19 @@ local chassisDirectionState = directionIn
 
 local function working()
     return controllerThread:getStatus() == "running" or controllerThread:getStatus() == "suspended"
+end
+
+local function setCurrentVault(index)
+    local file = fs.open("activeVault", "w")
+    file.write(index)
+    file.close()
+end
+
+local function getCurrentVault()
+    local file = fs.open("activeVault", "r")
+    local index = file.readAll()
+    file.close()
+    return tonumber(index)
 end
 
 local function emitEvent()
@@ -85,7 +102,7 @@ local function grabVault(index, thencb)
         setPusherLock(true)
         setChassisLock(true)
 
-        local duration = distanceToRotationDuration(128, index * 3 + 3)
+        local duration = distanceToRotationDuration(speed, index * 3)
 
         setChassisDirection(directionOut)
         setChassisLock(false)
@@ -118,7 +135,7 @@ local function grabVault(index, thencb)
         setPusherLock(true)
         emitEvent()
 
-        currentVault = index + 1
+        setCurrentVault(index + 1)
 
         if thencb then
             thencb()
@@ -132,7 +149,7 @@ local function returnVault(index, thencb)
         setPusherLock(true)
         setChassisLock(true)
 
-        local duration = distanceToRotationDuration(128, index * 3 + 3)
+        local duration = distanceToRotationDuration(speed, index * 3)
 
         setHandDirection(directionOut)
         setGrabberLock(false)
@@ -165,8 +182,8 @@ local function returnVault(index, thencb)
         setChassisLock(true)
         emitEvent()
 
-        currentVault = 0
-        
+        setCurrentVault(0)
+
         if thencb then
             thencb()
         end
@@ -185,7 +202,8 @@ return {
     distanceToRotationDuration = distanceToRotationDuration,
 
     working = working,
-    currentVault = currentVault,
+    setCurrentVault = setCurrentVault,
+    getCurrentVault = getCurrentVault,
     numVaults = numVaults,
     directionIn = directionIn,
     directionOut = directionOut,

@@ -1,7 +1,7 @@
 local controller = require("controller")
 local vaults = require("vaults")
 local events = require("events")
-local frame  = require("frame")
+local frame = require("frame")
 
 local inEvent = false
 
@@ -39,7 +39,7 @@ local function initControlsTab(tab)
     tab:addLabel():setText("Chassis Direction"):setPosition(2, 8)
     tab:addLabel():setText("Hand Direction"):setPosition(2, 12)
 
-    local chassisDir = tab:addRadio():setPosition(2, 10):addItem("In", 2, 0):addItem("Out", 2, 1):onChange(function(self)
+    local chassisDir = tab:addRadio():setPosition(2, 10):addItem("Out", 2, 0):addItem("In", 2, 1):onChange(function(self)
         if controller.working() then
             if controller.chassisDirectionState == controller.directionOut then
                 self:selectItem(1)
@@ -57,7 +57,7 @@ local function initControlsTab(tab)
         end
     end)
 
-    local handDir = tab:addRadio():setPosition(2, 14):addItem("In", 2, 0):addItem("Out", 2, 1):onChange(function(self)
+    local handDir = tab:addRadio():setPosition(2, 14):addItem("Out", 2, 0):addItem("In", 2, 1):onChange(function(self)
         if controller.working() then
             if controller.handDirectionState == controller.directionOut then
                 self:selectItem(1)
@@ -132,6 +132,17 @@ local function initControlsTab(tab)
         controller.grabVault(selectedVault - 1)
         vaults.saveItems(selectedVault)
         controller.returnVault(selectedVault - 1)
+    end)
+
+    tab:addButton():setText("Empty Chest"):setPosition(32, 10):setSize(17, 3):onClick(function(self)
+        if controller.working() or controller.getCurrentVault() == 0 then return end
+
+        local vault = peripheral.wrap(vaults.vaultSide)
+        local chest = peripheral.wrap(vaults.chestSide)
+        for i = 1, chest.size() do
+            vault.pullItems(vaults.chestSide, i)
+        end
+        vaults.saveItems(controller.getCurrentVault())
     end)
 end
 
