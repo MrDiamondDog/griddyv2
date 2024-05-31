@@ -89,6 +89,7 @@ local function requestItems()
                 vaults.saveItems(currentVault)
                 controller.returnVault(currentVault - 1)
             end
+
             currentVault = itemsRequested[i].vault
             controller.grabVault(currentVault - 1)
         end
@@ -118,13 +119,11 @@ local function initItemsTab(tab)
     local controlBar = tab:addFrame():setSize("parent.w", 6):setPosition(1, "parent.h - 5")
     RequestsLabel = controlBar:addLabel():setText("Items Requested: " .. #itemsRequested):setPosition(2, 2)
     controlBar:addButton():setText("Request Items"):setSize(15, 3):setPosition(2, 3):onClick(function()
-        if controller.working() then return end
         requestItems()
         search = ""
     end)
 
     controlBar:addButton():setText("Empty chest"):setSize(13, 3):setPosition(18, 3):onClick(function()
-        if controller.working() then return end
         -- find first empty vault
         local emptyVault = 0
         for i = 1, controller.numVaults do
@@ -143,15 +142,21 @@ local function initItemsTab(tab)
             return
         end
 
-        controller.grabVault(emptyVault - 1, function()
-            local vault = peripheral.wrap(vaults.vaultSide)
-            local chest = peripheral.wrap(vaults.chestSide)
-            for i = 1, chest.size() do
-                vault.pullItems(vaults.chestSide, i)
-            end
-            vaults.saveItems(emptyVault)
-            controller.returnVault(emptyVault - 1)
-        end)
+        controller.grabVault(emptyVault - 1)
+
+        local vault = peripheral.wrap(vaults.vaultSide)
+        local chest = peripheral.wrap(vaults.chestSide)
+        for i = 1, chest.size() do
+            vault.pullItems(vaults.chestSide, i)
+        end
+        vaults.saveItems(emptyVault)
+        controller.returnVault(emptyVault - 1)
+    end)
+
+    controlBar:addButton():setText("Refresh"):setSize(9, 3):setPosition(32, 3):onClick(function()
+        items = vaults.getAllItems()
+        resetUI()
+        addItems(search)
     end)
 
     events.onIndex(function()

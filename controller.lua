@@ -1,18 +1,16 @@
 local main = require("frame")
 local events = require("events")
 
-local function distanceToRotationDuration(speed, distance)
+local speed = 256
+
+local function distanceToRotationDuration(distance)
     local blocksToMove = distance + 4
     local metersPerTick = speed / 512
     local duration = math.ceil(blocksToMove / metersPerTick) + 2
     return duration / 20
 end
 
-local speed = 256
-
 local numVaults = fs.exists("vault_cache") and #fs.list("vault_cache") or 0
-
-local controllerThread = main.frame:addThread()
 
 local controller = peripheral.wrap("top")
 
@@ -25,10 +23,6 @@ local chassisLockState = true
 local handDirectionState = directionIn
 local chassisDirectionState = directionIn
 
-local function working()
-    return controllerThread:getStatus() == "running" or controllerThread:getStatus() == "suspended"
-end
-
 local function setCurrentVault(index)
     local file = fs.open("activeVault", "w")
     file.write(index)
@@ -40,16 +34,6 @@ local function getCurrentVault()
     local index = file.readAll()
     file.close()
     return tonumber(index)
-end
-
-local function emitEvent()
-    events.callHandlers(events.controllerStateHandlers, {
-        pusherLock = pusherLockState,
-        grabberLock = grabberLockState,
-        chassisLock = chassisLockState,
-        handDirection = handDirectionState,
-        chassisDirection = chassisDirectionState
-    })
 end
 
 local function setPusherLock(state)
@@ -78,116 +62,85 @@ local function setChassisLock(state)
 end
 
 local function reset()
-    controllerThread:start(function()
-        setHandDirection(directionIn)
-        setPusherLock(false)
-        setGrabberLock(false)
-        emitEvent()
-        sleep(5)
-        setPusherLock(true)
-        setGrabberLock(true)
+    setHandDirection(directionIn)
+    setPusherLock(false)
+    setGrabberLock(false)
+    sleep(5)
+    setPusherLock(true)
+    setGrabberLock(true)
 
-        setChassisDirection(directionIn)
-        setChassisLock(false)
-        emitEvent()
-        sleep(5)
-        setChassisLock(true)
-        emitEvent()
-    end)
+    setChassisDirection(directionIn)
+    setChassisLock(false)
+    sleep(5)
+    setChassisLock(true)
 end
 
-local function grabVault(index, thencb)
-    controllerThread:start(function()
-        setGrabberLock(true)
-        setPusherLock(true)
-        setChassisLock(true)
+local function grabVault(index)
+    setGrabberLock(true)
+    setPusherLock(true)
+    setChassisLock(true)
 
-        local duration = distanceToRotationDuration(speed, index * 3)
+    local duration = distanceToRotationDuration(index * 3)
 
-        setChassisDirection(directionOut)
-        setChassisLock(false)
-        emitEvent()
-        sleep(duration)
-        setChassisLock(true)
+    setChassisDirection(directionOut)
+    setChassisLock(false)
+    sleep(duration)
+    setChassisLock(true)
 
-        setHandDirection(directionOut)
-        setGrabberLock(false)
-        emitEvent()
-        sleep(2)
-        setHandDirection(directionIn)
-        emitEvent()
-        sleep(2)
-        setGrabberLock(true)
+    setHandDirection(directionOut)
+    setGrabberLock(false)
+    sleep(2)
+    setHandDirection(directionIn)
+    sleep(2)
+    setGrabberLock(true)
 
-        setChassisDirection(directionIn)
-        setChassisLock(false)
-        emitEvent()
-        sleep(duration)
-        setChassisLock(true)
+    setChassisDirection(directionIn)
+    setChassisLock(false)
+    sleep(duration)
+    setChassisLock(true)
 
-        setHandDirection(directionOut)
-        setPusherLock(false)
-        emitEvent()
-        sleep(2)
-        setHandDirection(directionIn)
-        emitEvent()
-        sleep(2)
-        setPusherLock(true)
-        emitEvent()
+    setHandDirection(directionOut)
+    setPusherLock(false)
+    sleep(2)
+    setHandDirection(directionIn)
+    sleep(2)
+    setPusherLock(true)
 
-        setCurrentVault(index + 1)
-
-        if thencb then
-            thencb()
-        end
-    end)
+    setCurrentVault(index + 1)
 end
 
-local function returnVault(index, thencb)
-    controllerThread:start(function()
-        setGrabberLock(true)
-        setPusherLock(true)
-        setChassisLock(true)
+local function returnVault(index)
+    setGrabberLock(true)
+    setPusherLock(true)
+    setChassisLock(true)
 
-        local duration = distanceToRotationDuration(speed, index * 3)
+    local duration = distanceToRotationDuration(index * 3)
 
-        setHandDirection(directionOut)
-        setGrabberLock(false)
-        emitEvent()
-        sleep(2)
-        setHandDirection(directionIn)
-        emitEvent()
-        sleep(2)
-        setGrabberLock(true)
+    setHandDirection(directionOut)
+    setGrabberLock(false)
+    sleep(2)
+    setHandDirection(directionIn)
+    sleep(2)
+    setGrabberLock(true)
 
-        setChassisDirection(directionOut)
-        setChassisLock(false)
-        emitEvent()
-        sleep(duration)
-        setChassisLock(true)
+    setChassisDirection(directionOut)
+    setChassisLock(false)
+    sleep(duration)
+    setChassisLock(true)
 
-        setHandDirection(directionOut)
-        setPusherLock(false)
-        emitEvent()
-        sleep(2)
-        setHandDirection(directionIn)
-        emitEvent()
-        sleep(2)
-        setPusherLock(true)
+    setHandDirection(directionOut)
+    setPusherLock(false)
+    sleep(2)
+    setHandDirection(directionIn)
+    sleep(2)
+    setPusherLock(true)
 
-        setChassisDirection(directionIn)
-        setChassisLock(false)
-        emitEvent()
-        sleep(duration)
-        setChassisLock(true)
-        emitEvent()
+    setChassisDirection(directionIn)
+    setChassisLock(false)
+    sleep(duration)
+    setChassisLock(true)
 
-        setCurrentVault(0)
-
-        if thencb then
-            thencb()
-        end
-    end)
+    setCurrentVault(0)
 end
 
 return {
@@ -201,7 +154,6 @@ return {
     reset = reset,
     distanceToRotationDuration = distanceToRotationDuration,
 
-    working = working,
     setCurrentVault = setCurrentVault,
     getCurrentVault = getCurrentVault,
     numVaults = numVaults,
