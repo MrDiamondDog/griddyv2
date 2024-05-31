@@ -30,7 +30,7 @@ end
 
 local function getAllItems()
     local items = {}
-    for i = 1, 2 do
+    for i = 1, 1 do
         local vaultItems = getItems(i)
         for j = 1, #vaultItems do
             items[#items + 1] = vaultItems[j]

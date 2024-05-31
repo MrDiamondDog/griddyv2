@@ -124,34 +124,36 @@ local function initItemsTab(tab)
     end)
 
     -- controlBar:addButton():setText("Empty chest"):setSize(13, 3):setPosition(18, 3):onClick(function()
-    --     -- find first empty vault
-    --     local emptyVault = 0
-    --     for i = 1, controller.numVaults do
-    --         local file = fs.open("vault_cache/" .. i, "r")
-    --         if #strutils.split(file.readAll(), "\n") < 1620 then
-    --             emptyVault = i
-    --             file.close()
-    --             break
-    --         end
-    --         file.close()
-    --     end
+    controlBar:addButton():setText("Index"):setSize(13, 3):setPosition(18, 3):onClick(function()
+        -- find first empty vault
+        -- local emptyVault = 0
+        -- for i = 1, controller.numVaults do
+        --     local file = fs.open("vault_cache/" .. i, "r")
+        --     if #strutils.split(file.readAll(), "\n") < 1620 then
+        --         emptyVault = i
+        --         file.close()
+        --         break
+        --     end
+        --     file.close()
+        -- end
 
-    --     -- frame.debug(emptyVault)
+        -- -- frame.debug(emptyVault)
 
-    --     if emptyVault == 0 then
-    --         return
-    --     end
+        -- if emptyVault == 0 then
+        --     return
+        -- end
 
-    --     controller.grabVault(emptyVault - 1)
+        -- controller.grabVault(emptyVault - 1)
 
-    --     local vault = peripheral.wrap(vaults.vaultSide)
-    --     local chest = peripheral.wrap(vaults.chestSide)
-    --     for i = 1, chest.size() do
-    --         vault.pullItems(vaults.chestSide, i)
-    --     end
-    --     vaults.saveItems(emptyVault)
-    --     controller.returnVault(emptyVault - 1)
-    -- end)
+        -- local vault = peripheral.wrap(vaults.vaultSide)
+        -- local chest = peripheral.wrap(vaults.chestSide)
+        -- for i = 1, chest.size() do
+        --     vault.pullItems(vaults.chestSide, i)
+        -- end
+        -- vaults.saveItems(emptyVault)
+        -- controller.returnVault(emptyVault - 1)
+        vaults.saveItems(1)
+    end)
 
     controlBar:addButton():setText("Refresh"):setSize(9, 3):setPosition(32, 3):onClick(function()
         items = vaults.getAllItems()
