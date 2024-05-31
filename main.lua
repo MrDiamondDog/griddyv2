@@ -10,7 +10,6 @@ fs.makeDir("vault_cache")
 
 controller.setPusherLock(true)
 controller.setGrabberLock(true)
-controller.setChassisLock(true)
 controller.setChassisDirection(controller.DirectionOut)
 controller.setHandDirection(controller.DirectionOut)
 

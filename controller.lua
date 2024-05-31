@@ -1,12 +1,11 @@
 local main = require("frame")
 local events = require("events")
 
-local speed = 256
-local durationPerVault = 0.5
-
 local numVaults = fs.exists("vault_cache") and #fs.list("vault_cache") or 0
 
 local controller = peripheral.wrap("top")
+local modem = peripheral.wrap("right")
+modem.open(1)
 
 local directionOut = true
 local directionIn = false
@@ -50,9 +49,9 @@ local function setChassisDirection(dir)
     chassisDirectionState = not dir
 end
 
-local function setChassisLock(state)
-    controller.setOutput("front", state)
-    chassisLockState = state
+local function moveChassis(dist)
+    modem.transmit(1, 1, tostring(dist + 1))
+    os.pullEvent("modem_message")
 end
 
 local function reset()
@@ -64,20 +63,15 @@ local function reset()
     setGrabberLock(true)
 
     setChassisDirection(directionIn)
-    setChassisLock(false)
-    sleep(5)
-    setChassisLock(true)
+    moveChassis(10)
 end
 
 local function grabVault(index)
     setGrabberLock(true)
     setPusherLock(true)
-    setChassisLock(true)
 
     setChassisDirection(directionOut)
-    setChassisLock(false)
-    sleep(durationPerVault * (index + 1))
-    setChassisLock(true)
+    moveChassis((index + 1) * 3)
 
     setHandDirection(directionOut)
     setGrabberLock(false)
@@ -87,9 +81,7 @@ local function grabVault(index)
     setGrabberLock(true)
 
     setChassisDirection(directionIn)
-    setChassisLock(false)
-    sleep(durationPerVault * (index + 1))
-    setChassisLock(true)
+    moveChassis((index + 1) * 3)
 
     setHandDirection(directionOut)
     setPusherLock(false)
@@ -104,7 +96,6 @@ end
 local function returnVault(index)
     setGrabberLock(true)
     setPusherLock(true)
-    setChassisLock(true)
 
     setHandDirection(directionOut)
     setGrabberLock(false)
@@ -114,9 +105,7 @@ local function returnVault(index)
     setGrabberLock(true)
 
     setChassisDirection(directionOut)
-    setChassisLock(false)
-    sleep(durationPerVault * (index + 1))
-    setChassisLock(true)
+    moveChassis((index + 1) * 3)
 
     setHandDirection(directionOut)
     setPusherLock(false)
@@ -126,9 +115,7 @@ local function returnVault(index)
     setPusherLock(true)
 
     setChassisDirection(directionIn)
-    setChassisLock(false)
-    sleep(durationPerVault * (index + 1))
-    setChassisLock(true)
+    moveChassis((index + 1) * 3)
 
     setCurrentVault(0)
 end
@@ -138,7 +125,7 @@ return {
     setHandDirection = setHandDirection,
     setGrabberLock = setGrabberLock,
     setChassisDirection = setChassisDirection,
-    setChassisLock = setChassisLock,
+    moveChassis = moveChassis,
     grabVault = grabVault,
     returnVault = returnVault,
     reset = reset,

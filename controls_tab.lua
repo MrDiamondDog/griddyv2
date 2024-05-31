@@ -14,11 +14,6 @@ local function initControlsTab(tab)
         controller.setGrabberLock(checked)
     end)
 
-    local chassisLock = tab:addCheckbox():setText("Chassis Lock"):setPosition(2, 6):setChecked(controller.chassisLockState):onChange(function(self)
-        local checked = self:getValue()
-        controller.setChassisLock(checked)
-    end)
-
     tab:addLabel():setText("Chassis Direction"):setPosition(2, 8)
     tab:addLabel():setText("Hand Direction"):setPosition(2, 12)
 
