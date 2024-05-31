@@ -2,13 +2,7 @@ local main = require("frame")
 local events = require("events")
 
 local speed = 256
-
-local function distanceToRotationDuration(distance)
-    local blocksToMove = distance + 4
-    local metersPerTick = speed / 512
-    local duration = math.ceil(blocksToMove / metersPerTick) + 2
-    return duration / 20
-end
+local durationPerVault = 0.5
 
 local numVaults = fs.exists("vault_cache") and #fs.list("vault_cache") or 0
 
@@ -80,11 +74,9 @@ local function grabVault(index)
     setPusherLock(true)
     setChassisLock(true)
 
-    local duration = distanceToRotationDuration(index * 3)
-
     setChassisDirection(directionOut)
     setChassisLock(false)
-    sleep(duration)
+    sleep(durationPerVault * (index + 1))
     setChassisLock(true)
 
     setHandDirection(directionOut)
@@ -96,7 +88,7 @@ local function grabVault(index)
 
     setChassisDirection(directionIn)
     setChassisLock(false)
-    sleep(duration)
+    sleep(durationPerVault * (index + 1))
     setChassisLock(true)
 
     setHandDirection(directionOut)
@@ -114,8 +106,6 @@ local function returnVault(index)
     setPusherLock(true)
     setChassisLock(true)
 
-    local duration = distanceToRotationDuration(index * 3)
-
     setHandDirection(directionOut)
     setGrabberLock(false)
     sleep(1.25)
@@ -125,7 +115,7 @@ local function returnVault(index)
 
     setChassisDirection(directionOut)
     setChassisLock(false)
-    sleep(duration)
+    sleep(durationPerVault * (index + 1))
     setChassisLock(true)
 
     setHandDirection(directionOut)
@@ -137,7 +127,7 @@ local function returnVault(index)
 
     setChassisDirection(directionIn)
     setChassisLock(false)
-    sleep(duration)
+    sleep(durationPerVault * (index + 1))
     setChassisLock(true)
 
     setCurrentVault(0)
@@ -152,7 +142,6 @@ return {
     grabVault = grabVault,
     returnVault = returnVault,
     reset = reset,
-    distanceToRotationDuration = distanceToRotationDuration,
 
     setCurrentVault = setCurrentVault,
     getCurrentVault = getCurrentVault,
