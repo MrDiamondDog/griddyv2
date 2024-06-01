@@ -7,11 +7,16 @@
 -- wget https://raw.githubusercontent.com/MrDiamondDog/griddyv2/master/install.lua install.lua
 
 local function download(url, pathname)
+    print("getting " .. url)
     local response = http.get(url)
     local content = response.readAll()
-    local file = fs.open(pathname, "w")
+
+    print("saving to " .. pathname)
+    local file = fs.open("griddy/" .. pathname, "w")
     file.write(content)
     file.close()
+
+    print("done")
 end
 
 download("https://raw.githubusercontent.com/MrDiamondDog/griddyv2/master/controller.lua", "controller.lua")
