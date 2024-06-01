@@ -12,7 +12,7 @@ local function download(url, pathname)
     local content = response.readAll()
 
     print("saving to " .. pathname)
-    local file = fs.open("griddy/" .. pathname, "w")
+    local file = fs.open(pathname, "w")
     file.write(content)
     file.close()
 
