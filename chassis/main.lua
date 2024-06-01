@@ -1,6 +1,8 @@
 local modem = peripheral.find("modem")
 local sg = peripheral.wrap("right")
 
+modem.open(1)
+
 while true do
     local event, side, channel, replyChannel, message, distance = os.pullEvent("modem_message")
     print(message .. "blocks")

@@ -14,6 +14,15 @@ local function initControlsTab(tab)
         controller.setGrabberLock(checked)
     end)
 
+    local chassisMove = tab:addInput():setDefaultText("Blocks"):setPosition(2, 6):setInputType("number")
+    local doChassisMove = tab:addButton():setText("Move Chassis"):setPosition(9, 6):setSize(14, 1):onClick(function(self)
+        if not tonumber(chassisMove:getValue()) then return end
+        local value = tonumber(chassisMove:getValue()) - 1
+        if value then
+            controller.moveChassis(value)
+        end
+    end)
+
     tab:addLabel():setText("Chassis Direction"):setPosition(2, 8)
     tab:addLabel():setText("Hand Direction"):setPosition(2, 12)
 
