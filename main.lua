@@ -1,6 +1,6 @@
 local basalt = require("basalt")
 local main = require("frame")
--- local controller = require("controller")
+local controller = require("controller")
 -- local initControlsTab = require("controls_tab")
 -- local initVaultsTab = require("vaults_tab")
 local initItemsTab = require("items_tab")
