@@ -1,4 +1,4 @@
--- local controller = require("controller")
+local controller = require("controller")
 local strutils = require("strutils")
 local events = require("events")
 
@@ -6,9 +6,9 @@ local vaultSide = "back"
 local chestSide = "left"
 
 local function getItems(vault)
-    -- if vault > controller.numVaults or vault <= 0 then
-    --     return 0
-    -- end
+    if vault > controller.numVaults or vault <= 0 then
+        return 0
+    end
 
     local file = fs.open("vault_cache/"..vault, "r")
 
@@ -30,7 +30,7 @@ end
 
 local function getAllItems()
     local items = {}
-    for i = 1, 2 do
+    for i = 1, controller.numVaults do
         local vaultItems = getItems(i)
         for j = 1, #vaultItems do
             items[#items + 1] = vaultItems[j]
@@ -41,9 +41,9 @@ local function getAllItems()
 end
 
 local function getItemsLocal(vault)
-    -- if vault > controller.numVaults or vault <= 0 then
-    --     return 0
-    -- end
+    if vault > controller.numVaults or vault <= 0 then
+        return 0
+    end
 
     local vaultapi = peripheral.wrap(vaultSide)
     local list = vaultapi.list()
@@ -67,9 +67,9 @@ local function getItemsLocal(vault)
 end
 
 local function saveItems(vault)
-    -- if vault > controller.numVaults or vault <= 0 then
-    --     return
-    -- end
+    if vault > controller.numVaults or vault <= 0 then
+        return
+    end
 
     local items = getItemsLocal(vault)
     local serialized = ""

@@ -1,17 +1,17 @@
 local basalt = require("basalt")
 local main = require("frame")
 local controller = require("controller")
--- local initControlsTab = require("controls_tab")
--- local initVaultsTab = require("vaults_tab")
+local initControlsTab = require("controls_tab")
+local initVaultsTab = require("vaults_tab")
 local initItemsTab = require("items_tab")
--- local initSettingsTab = require("settings_tab")
+local initSettingsTab = require("settings_tab")
 
 fs.makeDir("vault_cache")
 
--- controller.setPusherLock(true)
--- controller.setGrabberLock(true)
--- controller.setChassisDirection(controller.DirectionOut)
--- controller.setHandDirection(controller.DirectionOut)
+controller.setPusherLock(true)
+controller.setGrabberLock(true)
+controller.setChassisDirection(controller.DirectionOut)
+controller.setHandDirection(controller.DirectionOut)
 
 local tabs = {
     main.frame:addFrame():setPosition(1, 2):setSize("parent.w", "parent.h - 1"),
@@ -40,9 +40,9 @@ local menubar = main.frame:addMenubar():setScrollable()
     :addItem("Options")
 
 
--- initVaultsTab(tabs[1])
+initVaultsTab(tabs[1])
 initItemsTab(tabs[2])
--- initControlsTab(tabs[3])
--- initSettingsTab(tabs[4])
+initControlsTab(tabs[3])
+initSettingsTab(tabs[4])
 
 basalt.autoUpdate()
